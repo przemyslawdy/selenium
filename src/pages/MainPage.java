@@ -32,6 +32,7 @@ public class MainPage extends BasePage {
         DETAILED_CATEGORY = By.xpath(String.format(DETAILED_CATEGORY_DYNAMIC_XPATH, detailedCategory));
 
         Actions hover = new Actions(driver);
+        wait.until(ExpectedConditions.visibilityOfElementLocated(DEPARTMENT_CHOICE));
         hover.moveToElement(driver.findElement(DEPARTMENT_CHOICE)).build().perform();
         wait.until(ExpectedConditions.visibilityOfElementLocated(MAIN_CATEGORY));
         hover.moveToElement(driver.findElement(MAIN_CATEGORY)).build().perform();

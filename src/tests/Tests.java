@@ -10,19 +10,17 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
-import pages.*;
-
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.concurrent.TimeUnit;
+import pages.*;
 
 public class Tests {
 
-    protected WebDriver driver;
-    protected WebDriverWait wait;
-    String productTitle;
-    BigDecimal productPrice;
-    int selectedQuantity;
+    private WebDriver driver;
+    private WebDriverWait wait;
+    private String productTitle;
+    private BigDecimal productPrice;
+    private int selectedQuantity;
 
     @Before
     public void setUp() {
@@ -36,10 +34,10 @@ public class Tests {
     }
 
     @After
-    public void tearDown() throws IOException {
+    public void tearDown() {
         driver.manage().deleteAllCookies();
         driver.quit();
-        Runtime.getRuntime().exec("taskkill /F /IM geckodriver.exe /T");
+       // Runtime.getRuntime().exec("taskkill /F /IM geckodriver.exe /T");
 
     }
 
@@ -49,33 +47,36 @@ public class Tests {
         new MainPage(driver, wait).getUrl();
     }
 
-    @When("^User chooses category$")
-    public void chooseProductCategory() {
 
+    @When("^User chooses category \"([^\"]*)\" -> \"([^\"]*)\" -> \"([^\"]*)\"$")
+    public void userChoosesCategory(String mainCategory, String detailedCategory, String mostDetailedCategory) {
         CategoryPage categoryPage = new MainPage(driver, wait)
-                .chooseCategory("Electronics, Computers & Office", "Camera, Photo & Video");
+                .chooseCategory(mainCategory, detailedCategory);
 
         BestSellersPage bestSellersPage = categoryPage.gotoBestSellers();
 
         bestSellersPage
-                .selectCategoryForBestSellers("Digital Cameras");
+                .selectCategoryForBestSellers(mostDetailedCategory);
     }
 
 
-    @And("^User selects item from Best Sellers$")
-    public void selectItemFromBestSellers() {
-        ProductPage productPage = new BestSellersInDesiredCategoryPage(driver, wait).selectProductFromBestSellers(5);
+
+    @And("^User selects item no (\\d+) from Best Sellers$")
+    public void userSelectsItemFromBestSellers(int itemNumber) {
+        ProductPage productPage = new BestSellersInDesiredCategoryPage(driver, wait).selectProductFromBestSellers(itemNumber);
         productTitle = productPage.getProductTitle();
         productPrice = productPage.getPrice();
+
     }
 
-    @And("^User selects quantity and adds product to cart$")
-        public void addToCart() {
+
+    @And("^User selects (\\d+) pieces and adds product to cart$")
+    public void userSelectsPiecesAndAddsProductToCart(int howMany) {
         ProductPage productPage = new ProductPage(driver, wait);
-        productPage.addProductToCart(8);
+        productPage.addProductToCart(howMany);
         selectedQuantity = productPage.getSelectedQuantity();
-
     }
+
 
     @And("^User goes to cart page$")
     public void goToCart() {
@@ -85,10 +86,14 @@ public class Tests {
     @Then("^Product title is proper and subtotal price in cart is correct$")
     public void verifyProductTitleAndSubtotalPrice() {
 
-        Assert.assertEquals(new CartPage(driver, wait).getProductTitleInCart(), productTitle);
-        Assert.assertEquals(new CartPage(driver, wait).getSubtotalPriceInCart(), productPrice.multiply(new BigDecimal(selectedQuantity)));
+        CartPage cartPage = new CartPage(driver,wait);
+        Assert.assertEquals(cartPage.getProductTitleInCart(), productTitle);
+        Assert.assertEquals(cartPage.getSubtotalPriceInCart(), productPrice.multiply(new BigDecimal(selectedQuantity)));
 
     }
+
+
+
 }
 
 
