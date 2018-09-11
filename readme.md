@@ -17,8 +17,12 @@
 5. Product page for specified product will be opened.
 6. Item will be added to the cart.
 7. Product name and subtotal price in cart will be verified.
-8. Feature file for cucumber can be easily modified by changing product category, item number on best sellers page and number of items being added to the cart.
 
 ----
+## info
+`
+Feature file for cucumber can be easily modified by changing product category, item number on best sellers page and number of items being added to the cart.
+`
+----
 ## created by
-` Przemysław Dyrda`
+`Przemysław Dyrda`
